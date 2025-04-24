@@ -19,5 +19,13 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        ShowGameView();
+    }
+
+    private void ShowGameView()
+    {
+        Window2 gameView = new Window2();
+        gameView.Show();
+        this.Close();
     }
 }
