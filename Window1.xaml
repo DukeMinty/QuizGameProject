@@ -29,9 +29,11 @@
         <Grid Grid.RowSpan="8" Grid.ColumnSpan="3" Background="DarkSlateGray"/>
 
         <!-- Content -->
-        <StackPanel Grid.Row="2" Grid.Column="1" Background="AliceBlue"/>
+        <DockPanel Name="QuestionBox" Grid.Row="2" Grid.Column="1" Background="AliceBlue">
+            <TextBlock Name="QuestionText" Text="Question" FontSize="20" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </DockPanel> 
         <TextBlock Grid.Column="1" Text="Quiz Game" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Height="48" Width="184" TextAlignment="Center"/>
-        <TextBlock Grid.Column="1" Grid.Row="1" Text="Question #" FontSize="29" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Height="48" Width="184" TextAlignment="Center"/>
+        <TextBlock Name="QuestionNum" Grid.Column="1" Grid.Row="1" Text="Question #" FontSize="29" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Height="48" Width="184" TextAlignment="Center"/>
 
         <!-- Buttons -->
         <Grid Grid.Row="4" Grid.Column="1">
@@ -41,9 +43,9 @@
                 <ColumnDefinition Width="300*"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Content="Answer 1" FontSize="20" HorizontalAlignment="Stretch"
+            <Button Name="AnswerButton1" Grid.Column="0" Content="Answer 1" FontSize="20" HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"/>
-            <Button Grid.Column="2" Content="Answer 2" FontSize="20" HorizontalAlignment="Stretch"
+            <Button Name="AnswerButton2" Grid.Column="2" Content="Answer 2" FontSize="20" HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"/>
         </Grid>
 
@@ -54,9 +56,9 @@
                 <ColumnDefinition Width="300*"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Content="Answer 3" FontSize="20" HorizontalAlignment="Stretch"
+            <Button Name="AnswerButton3" Grid.Column="0" Content="Answer 3" FontSize="20" HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"/>
-            <Button Grid.Column="2" Content="Answer 4" FontSize="20" HorizontalAlignment="Stretch"
+            <Button Name="AnswerButton4" Grid.Column="2" Content="Answer 4" FontSize="20" HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"/>
         </Grid>
     </Grid>
