@@ -31,9 +31,16 @@ namespace QuizGameProject
 
         private void Start_Button_Click(object sender, RoutedEventArgs e)
         {
-            Window1 window1 = new Window1();
-            window1.Show();
-            this.Close();
+            try
+            {
+                Window1 window1 = new Window1();
+                window1.Show();
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to go to Quiz Game" + ex.Message);
+            }
         }
     }
 }

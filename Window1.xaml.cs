@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -30,27 +31,82 @@ namespace QuizGameProject
 
         private void LoadQuestions()
         {
-            _questions = QuizLoader.LoadQuestions("Questions/testQuestions.json");
+            try
+            {
+                _questions = QuizLoader.LoadQuestions("Questions/testQuestions.json");
+                if (_questions == null)
+                {
+                    MessageBox.Show("Unable to load questions. PLease check question file or Try Again!");
+                    return;
+                }
+
+                Shuffle(_questions);
+                foreach (var question in _questions)
+                {
+                    if(question.Answers == null)
+                    {
+                        MessageBox.Show("Unable to load Answers. PLease check Answers file or Try Again!");
+                        return;
+                    }
+                    Shuffle(question.Answers);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: "+ ex.Message);
+                Close();
+            }
         }
 
         private void DisplayCurrentQuestion()
         {
-            QuestionNum.Text = $"{_currentQuestionIndex + 1} / {_questions.Count}";
+            try
+            {
+                QuestionNum.Text = $"{_currentQuestionIndex + 1} / {_questions.Count}";
 
-            var currentQuestion = _questions[_currentQuestionIndex];
-            QuestionText.Text = currentQuestion.Question;
+                var currentQuestion = _questions[_currentQuestionIndex];
+                QuestionText.Text = currentQuestion.Question;
 
-            AnswerButton1.Content = currentQuestion.Answers[0].Text;
-            AnswerButton1.Tag = currentQuestion.Answers[0].IsCorrect;
+                AnswerButton1.Content = currentQuestion.Answers[0].Text;
+                AnswerButton1.Tag = currentQuestion.Answers[0].IsCorrect;
 
-            AnswerButton2.Content = currentQuestion.Answers[1].Text;
-            AnswerButton2.Tag = currentQuestion.Answers[1].IsCorrect;
+                AnswerButton2.Content = currentQuestion.Answers[1].Text;
+                AnswerButton2.Tag = currentQuestion.Answers[1].IsCorrect;
 
-            AnswerButton3.Content = currentQuestion.Answers[2].Text;
-            AnswerButton3.Tag = currentQuestion.Answers[2].IsCorrect;
+                AnswerButton3.Content = currentQuestion.Answers[2].Text;
+                AnswerButton3.Tag = currentQuestion.Answers[2].IsCorrect;
 
-            AnswerButton4.Content = currentQuestion.Answers[3].Text;
-            AnswerButton4.Tag = currentQuestion.Answers[3].IsCorrect;
+                AnswerButton4.Content = currentQuestion.Answers[3].Text;
+                AnswerButton4.Tag = currentQuestion.Answers[3].IsCorrect;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to show Questions and Answers. Please Try again");
+            }
+        }
+        public static void Shuffle<t>(List<t> list)
+        {
+            if(list == null)
+            {
+                MessageBox.Show("Something went wrong");
+                return;
+            }
+            try
+            {
+                Random rand = new Random();
+                int i = list.Count;
+                while (i > 0)
+                {
+                    i--;
+                    int n = rand.Next(i + 1);
+                    t value = list[n];
+                    list[n] = list[i];
+                    list[i] = value;
+                }
+            }catch(Exception ex)
+            {
+                MessageBox.Show("Shuffle not working: "+ ex.Message);
+            }
         }
     }
 }
