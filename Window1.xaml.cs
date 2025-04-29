@@ -23,16 +23,15 @@ namespace QuizGameProject
         private List<QuizQuestions> _questions;
         private int _currentQuestionIndex = 0;
         private int numCorrect = 0;
-        private int percentageCorrect = 0;
 
-        private int _gameTimeSeconds = 60;
+        private int _gameTimeSeconds;
         private CancellationTokenSource _gameTimerCts;
 
         //This window is called if a timer is set
-        public Window1(bool timerOn, bool timerStatus, int timerLength)
+        public Window1(bool timerStatus, int timerLength)
         {
             InitializeComponent();
-            StartGameTimer();
+            StartGameTimer(timerStatus, timerLength);
             LoadQuestions();
             DisplayCurrentQuestion();
         }
@@ -169,13 +168,15 @@ namespace QuizGameProject
             }
         }
 
-        private async Task StartGameTimer()
+        private async Task StartGameTimer(bool timerStatus, int timerLength)
         {
 
             //Aaron -
 
             //GPT gave me the idea of a CancellationTokenSource, allowing for the timer
             //to be cancelled during the game without causing exceptions.
+
+            _gameTimeSeconds = timerLength;
 
             _gameTimerCts = new CancellationTokenSource();
             var token = _gameTimerCts.Token;

@@ -42,7 +42,7 @@ namespace QuizGameProject
                         MessageBox.Show("Please enter a valid number for the timer.");
                         return;
                     }
-                    Window1 window1 = new Window1((bool)TimerOnOffButton.Tag, (bool)TimerStatusButton.Tag, timerSeconds);
+                    Window1 window1 = new Window1((bool)TimerStatusButton.Tag, timerSeconds);
                     window1.Show();
                     this.Close();
                 }
