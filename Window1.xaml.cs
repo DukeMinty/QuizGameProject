@@ -27,6 +27,8 @@ namespace QuizGameProject
 
         private int _gameTimeSeconds = 60;
         private CancellationTokenSource _gameTimerCts;
+
+        //This window is called if a timer is set
         public Window1(bool timerOn, bool timerStatus, int timerLength)
         {
             InitializeComponent();
@@ -35,6 +37,7 @@ namespace QuizGameProject
             DisplayCurrentQuestion();
         }
 
+        //This window is called if no timer is set
         public Window1()
         {
             InitializeComponent();
