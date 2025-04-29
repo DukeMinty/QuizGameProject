@@ -108,5 +108,31 @@ namespace QuizGameProject
                 MessageBox.Show("Shuffle not working: "+ ex.Message);
             }
         }
+
+        private void AnswerButton_Click(object sender, RoutedEventArgs e)
+        {
+            if(sender is Button button)
+            {
+                bool isCorrect = (bool)button.Tag;
+                if ((bool)button.Tag)
+                {
+                    MessageBox.Show("Correct!");
+                }
+                else
+                {
+                    MessageBox.Show("Incorrect!");
+                }
+                _currentQuestionIndex++;
+                if (_currentQuestionIndex < _questions.Count)
+                {
+                    DisplayCurrentQuestion();
+                }
+                else
+                {
+                    MessageBox.Show("Quiz Completed!");
+                    Close();
+                }
+            }
+        }
     }
 }
