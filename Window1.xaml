@@ -31,8 +31,20 @@
         <!-- Content -->
         <DockPanel Name="QuestionBox" Grid.Row="2" Grid.Column="1" Background="AliceBlue">
             <TextBlock Name="QuestionText" Text="Question" FontSize="20" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        </DockPanel> 
-        <TextBlock Grid.Column="1" Text="Quiz Game" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Height="48" Width="184" TextAlignment="Center"/>
+        </DockPanel>
+
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20*"/>
+            <ColumnDefinition Width="90*"/>
+            <ColumnDefinition Width="20*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" Name="Timer" Text="" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Height="48" Width="184" TextAlignment="Center"/>
+            <TextBlock Grid.Column="1" Text="Quiz Game" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Height="48" Width="184" TextAlignment="Center"/>
+            <TextBlock Grid.Column="2" Name="ScoreCounter" Text="0%" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Height="48" Width="184" TextAlignment="Center"/>
+        </Grid>
+        
         <TextBlock Name="QuestionNum" Grid.Column="1" Grid.Row="1" Text="Question #" FontSize="29" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Height="48" Width="184" TextAlignment="Center"/>
 
         <!-- Buttons -->
@@ -44,9 +56,9 @@
             </Grid.ColumnDefinitions>
 
             <Button Name="AnswerButton1" Grid.Column="0" Content="Answer 1" FontSize="20" HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"/>
+                    VerticalAlignment="Stretch" Click="AnswerButton_Click"/>
             <Button Name="AnswerButton2" Grid.Column="2" Content="Answer 2" FontSize="20" HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"/>
+                    VerticalAlignment="Stretch" Click="AnswerButton_Click"/>
         </Grid>
 
         <Grid Grid.Row="6" Grid.Column="1">
@@ -57,9 +69,9 @@
             </Grid.ColumnDefinitions>
 
             <Button Name="AnswerButton3" Grid.Column="0" Content="Answer 3" FontSize="20" HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"/>
+                    VerticalAlignment="Stretch" Click="AnswerButton_Click"/>
             <Button Name="AnswerButton4" Grid.Column="2" Content="Answer 4" FontSize="20" HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"/>
+                    VerticalAlignment="Stretch" Click="AnswerButton_Click"/>
         </Grid>
     </Grid>
 </Window>

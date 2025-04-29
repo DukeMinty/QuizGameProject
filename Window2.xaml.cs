@@ -22,6 +22,8 @@ namespace QuizGameProject
         public Window2()
         {
             InitializeComponent();
+            TimerOnOffButton.Tag = true;
+            TimerStatusButton.Tag = true;
         }
 
         private void Quit_Button_Click(object sender, RoutedEventArgs e)
@@ -33,13 +35,59 @@ namespace QuizGameProject
         {
             try
             {
-                Window1 window1 = new Window1();
-                window1.Show();
-                this.Close();
+                if ((bool)TimerOnOffButton.Tag)
+                {
+                    if (!int.TryParse(TimerTextBox.Text, out int timerSeconds))
+                    {
+                        MessageBox.Show("Please enter a valid number for the timer.");
+                        return;
+                    }
+                    Window1 window1 = new Window1((bool)TimerOnOffButton.Tag, (bool)TimerStatusButton.Tag, timerSeconds);
+                    window1.Show();
+                    this.Close();
+                }
+                else
+                {
+                    Window1 window1 = new Window1();
+                    window1.Show();
+                    this.Close();
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Unable to go to Quiz Game" + ex.Message);
+            }
+        }
+
+        private void TimerOnOff_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if ((bool)TimerOnOffButton.Tag)
+            {
+                TimerOnOffButton.Content = "Timer: Off";
+                TimerOnOffButton.Tag = false;
+                TimerStatusButton.IsEnabled = false;
+                TimerTextBox.IsEnabled = false;
+            }
+            else
+            {
+                TimerOnOffButton.Content = "Timer: On";
+                TimerOnOffButton.Tag = true;
+                TimerStatusButton.IsEnabled = true;
+                TimerTextBox.IsEnabled = true;
+            }
+        }
+
+        private void TimerStatus_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if ((bool)TimerStatusButton.Tag)
+            {
+                TimerStatusButton.Content = "Per Question";
+                TimerStatusButton.Tag = false;
+            }
+            else
+            {
+                TimerStatusButton.Content = "Per Game";
+                TimerStatusButton.Tag = true;
             }
         }
     }

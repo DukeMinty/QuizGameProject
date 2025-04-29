@@ -22,6 +22,19 @@ namespace QuizGameProject
     {
         private List<QuizQuestions> _questions;
         private int _currentQuestionIndex = 0;
+        private int numCorrect = 0;
+        private int percentageCorrect = 0;
+
+        private int _gameTimeSeconds = 60;
+        private CancellationTokenSource _gameTimerCts;
+        public Window1(bool timerOn, bool timerStatus, int timerLength)
+        {
+            InitializeComponent();
+            StartGameTimer();
+            LoadQuestions();
+            DisplayCurrentQuestion();
+        }
+
         public Window1()
         {
             InitializeComponent();
@@ -43,7 +56,7 @@ namespace QuizGameProject
                 Shuffle(_questions);
                 foreach (var question in _questions)
                 {
-                    if(question.Answers == null)
+                    if (question.Answers == null)
                     {
                         MessageBox.Show("Unable to load Answers. PLease check Answers file or Try Again!");
                         return;
@@ -53,7 +66,7 @@ namespace QuizGameProject
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error: "+ ex.Message);
+                MessageBox.Show("Error: " + ex.Message);
                 Close();
             }
         }
@@ -62,6 +75,7 @@ namespace QuizGameProject
         {
             try
             {
+
                 QuestionNum.Text = $"{_currentQuestionIndex + 1} / {_questions.Count}";
 
                 var currentQuestion = _questions[_currentQuestionIndex];
@@ -86,7 +100,7 @@ namespace QuizGameProject
         }
         public static void Shuffle<t>(List<t> list)
         {
-            if(list == null)
+            if (list == null)
             {
                 MessageBox.Show("Something went wrong");
                 return;
@@ -103,36 +117,90 @@ namespace QuizGameProject
                     list[n] = list[i];
                     list[i] = value;
                 }
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                MessageBox.Show("Shuffle not working: "+ ex.Message);
+                MessageBox.Show("Shuffle not working: " + ex.Message);
             }
         }
 
         private void AnswerButton_Click(object sender, RoutedEventArgs e)
         {
-            if(sender is Button button)
+            if (sender is Button button)
             {
-                bool isCorrect = (bool)button.Tag;
-                if ((bool)button.Tag)
+                // Disable all buttons
+                EnableDisableButtons();
+
+                QuestionText.Text = ((bool)button.Tag ? "Correct" : "Incorrect");
+
+                ProgressGame((bool)button.Tag);
+
+            }
+        }
+        private void EnableDisableButtons()
+        {
+            AnswerButton1.IsEnabled = !AnswerButton1.IsEnabled;
+            AnswerButton2.IsEnabled = !AnswerButton2.IsEnabled;
+            AnswerButton3.IsEnabled = !AnswerButton3.IsEnabled;
+            AnswerButton4.IsEnabled = !AnswerButton4.IsEnabled;
+        }
+
+        private async void ProgressGame(bool choice)
+        {
+            if (choice)
+            {
+                numCorrect++;
+            }
+
+            ScoreCounter.Text = $"{(numCorrect * 100) / (_currentQuestionIndex + 1)}%";
+
+            await Task.Delay(2000);
+
+            _currentQuestionIndex++;
+
+            if (_currentQuestionIndex < _questions.Count)
+            {
+                DisplayCurrentQuestion();
+                EnableDisableButtons();
+                //EndGame();
+            }
+        }
+
+        private async Task StartGameTimer()
+        {
+
+            //Aaron -
+
+            //GPT gave me the idea of a CancellationTokenSource, allowing for the timer
+            //to be cancelled during the game without causing exceptions.
+
+            _gameTimerCts = new CancellationTokenSource();
+            var token = _gameTimerCts.Token;
+
+            for (int i = _gameTimeSeconds; i >= 0; i--)
+            {
+                Timer.Text = $"{i}";
+
+                try
                 {
-                    MessageBox.Show("Correct!");
+                    await Task.Delay(1000, token);
                 }
-                else
+                catch (TaskCanceledException)
                 {
-                    MessageBox.Show("Incorrect!");
-                }
-                _currentQuestionIndex++;
-                if (_currentQuestionIndex < _questions.Count)
-                {
-                    DisplayCurrentQuestion();
-                }
-                else
-                {
-                    MessageBox.Show("Quiz Completed!");
-                    Close();
+                    return;
                 }
             }
         }
+
+        //private void EndGame()
+        //{
+        //    _gameTimerCts?.Cancel();
+        //    AnswerButton1.IsEnabled = false;
+        //    AnswerButton2.IsEnabled = false;
+        //    AnswerButton3.IsEnabled = false;
+        //    AnswerButton4.IsEnabled = false;
+
+        //    QuestionText.Text = $"Final Score: {numCorrect} / {_questions.Count} ({percentageCorrect}%)";
+        //}
     }
 }
