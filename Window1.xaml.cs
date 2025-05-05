@@ -21,23 +21,30 @@ namespace QuizGameProject
     public partial class Window1 : Window
     {
         private List<QuizQuestions> _questions;
-        private int _currentQuestionIndex = 0;
+        private int currentQuestionIndex = 0;
         private int numCorrect = 0;
 
-        private int _gameTimeSeconds;
-        private int _perQuestionTime;
+        private bool isPerGameTimer = true;
+        private int perQuestionTime = 0;
 
-        private bool _isPerGameTimer;
-
-        private CancellationTokenSource _gameTimerCts;
-        private CancellationTokenSource _questionTimerCts;
+        private CancellationTokenSource gameTimerCts;
+        private CancellationTokenSource questionTimerCts;
 
         //This window is called if a timer is set
         public Window1(bool timerStatus, int timerLength)
         {
             InitializeComponent();
-            _isPerGameTimer = timerStatus;
-            _ = StartGameTimer(timerStatus, timerLength);
+            if (timerStatus)
+            { 
+                StartGameTimer(timerLength);
+            }
+            else
+            {
+                isPerGameTimer = false;
+                perQuestionTime = timerLength;
+            }
+            //    _isPerGameTimer = timerStatus;
+            //_ = StartGameTimer(timerLength);
             LoadQuestions();
             DisplayCurrentQuestion();
         }
@@ -84,9 +91,9 @@ namespace QuizGameProject
             try
             {
 
-                QuestionNum.Text = $"{_currentQuestionIndex + 1} / {_questions.Count}";
+                QuestionNum.Text = $"{currentQuestionIndex + 1} / {_questions.Count}";
 
-                var currentQuestion = _questions[_currentQuestionIndex];
+                var currentQuestion = _questions[currentQuestionIndex];
                 QuestionText.Text = currentQuestion.Question;
 
                 AnswerButton1.Content = currentQuestion.Answers[0].Text;
@@ -101,9 +108,9 @@ namespace QuizGameProject
                 AnswerButton4.Content = currentQuestion.Answers[3].Text;
                 AnswerButton4.Tag = currentQuestion.Answers[3].IsCorrect;
 
-                if (!_isPerGameTimer)
+                if (!isPerGameTimer)
                 {
-                    StartPerQuestionTimer(_perQuestionTime);
+                    StartPerQuestionTimer(perQuestionTime);
                 }
             }
             catch (Exception ex)
@@ -141,7 +148,7 @@ namespace QuizGameProject
         {
             if (sender is Button button)
             {
-                _questionTimerCts?.Cancel();
+                questionTimerCts?.Cancel();
 
                 // Disable all buttons
                 EnableDisableButtons();
@@ -167,21 +174,20 @@ namespace QuizGameProject
                 numCorrect++;
             }
 
-            ScoreCounter.Text = $"{(numCorrect * 100) / (_currentQuestionIndex + 1)}%";
+            ScoreCounter.Text = $"{(numCorrect * 100) / (currentQuestionIndex + 1)}%";
 
             await Task.Delay(2000);
 
-            _currentQuestionIndex++;
+            currentQuestionIndex++;
 
-            if (_currentQuestionIndex < _questions.Count)
+            if (currentQuestionIndex < _questions.Count)
             {
                 DisplayCurrentQuestion();
                 EnableDisableButtons();
-                //EndGame();
             }
         }
 
-        private async Task StartGameTimer(bool timerStatus, int timerLength)
+        private async Task StartGameTimer(int timerLength)
         {
 
             //Aaron -
@@ -189,35 +195,35 @@ namespace QuizGameProject
             //GPT gave me the idea of a CancellationTokenSource, allowing for the timer
             //to be cancelled during the game without causing exceptions.
 
-            _gameTimeSeconds = timerLength;
-            _perQuestionTime = timerLength;
-            _gameTimerCts = new CancellationTokenSource();
-            var token = _gameTimerCts.Token;
+            gameTimerCts = new CancellationTokenSource();
+            var token = gameTimerCts.Token;
 
-            if (timerStatus)
+            for (int i = timerLength; i >= 0; i--)
             {
-                _gameTimeSeconds = timerLength;
-                for (int i = _gameTimeSeconds; i >= 0; i--)
-                {
-                    Timer.Text = $"{i}";
+                Timer.Text = $"{i}";
 
-                    try
-                    {
-                        await Task.Delay(1000, token);
-                    }
-                    catch (TaskCanceledException)
-                    {
-                        return;
-                    }
+                try
+                {
+                    await Task.Delay(1000, token);
+                }
+                catch (TaskCanceledException)
+                {
+                    return;
+                }
+                if (i == 0)
+                {
+                    EnableDisableButtons();
+                    ProgressGame(false);
+                    return;
                 }
             }
         }
 
         private async void StartPerQuestionTimer(int seconds)
         {
-            _questionTimerCts?.Cancel();
-            _questionTimerCts = new CancellationTokenSource();
-            var token = _questionTimerCts.Token;
+            questionTimerCts?.Cancel();
+            questionTimerCts = new CancellationTokenSource();
+            var token = questionTimerCts.Token;
 
             for (int i = seconds; i >= 0; i--)
             {
@@ -238,16 +244,5 @@ namespace QuizGameProject
                 }
             }
         }
-
-        //private void EndGame()
-        //{
-        //    _gameTimerCts?.Cancel();
-        //    AnswerButton1.IsEnabled = false;
-        //    AnswerButton2.IsEnabled = false;
-        //    AnswerButton3.IsEnabled = false;
-        //    AnswerButton4.IsEnabled = false;
-
-        //    QuestionText.Text = $"Final Score: {numCorrect} / {_questions.Count} ({percentageCorrect}%)";
-        //}
     }
 }
