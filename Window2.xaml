@@ -54,7 +54,7 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0" Text="Timer" FontSize="15" TextAlignment="Center" VerticalAlignment="Center" Background="White"/>
-                <TextBox Grid.Row="1" Name="TimerTextBox" Text="60" FontSize="15" TextAlignment="Center" VerticalAlignment="Center" Background="Gray"/>
+                <TextBox Grid.Row="1" Name="TimerTextBox" Text="60" FontSize="15" TextAlignment="Center" VerticalAlignment="Center" Background="LightSlateGray"/>
             </Grid>
         </Grid>
 

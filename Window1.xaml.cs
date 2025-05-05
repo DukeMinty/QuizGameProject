@@ -20,18 +20,23 @@ namespace QuizGameProject
     /// </summary>
     public partial class Window1 : Window
     {
-        private List<QuizQuestions> _questions;
+        private List<QuizQuestions> questions;
         private int currentQuestionIndex = 0;
         private int numCorrect = 0;
 
         private bool isPerGameTimer = true;
         private int perQuestionTime = 0;
 
+        private string questionNumText;
+        private string overallPercentageText;
+
+        private bool questionsLoaded;
+
         private CancellationTokenSource gameTimerCts;
         private CancellationTokenSource questionTimerCts;
 
         //This window is called if a timer is set
-        public Window1(bool timerStatus, int timerLength)
+        public Window1(bool timerStatus, int timerLength, int quizChoice)
         {
             InitializeComponent();
             if (timerStatus)
@@ -43,40 +48,56 @@ namespace QuizGameProject
                 isPerGameTimer = false;
                 perQuestionTime = timerLength;
             }
-            //    _isPerGameTimer = timerStatus;
-            //_ = StartGameTimer(timerLength);
-            LoadQuestions();
+            LoadQuestions(quizChoice);
             DisplayCurrentQuestion();
         }
 
         //This window is called if no timer is set
-        public Window1()
+        public Window1(int quizChoice)
         {
             InitializeComponent();
-            LoadQuestions();
+            LoadQuestions(quizChoice);
             DisplayCurrentQuestion();
         }
 
-        private void LoadQuestions()
+        private void LoadQuestions(int quizChoice)
         {
             try
             {
-                _questions = QuizLoader.LoadQuestions("Questions/testQuestions.json");
-                if (_questions == null)
+                string filePath = string.Empty;
+                switch (quizChoice)
+                {
+                    case 1:
+                        filePath = "Questions/MizzouQuestions.json";
+                        break;
+                    case 2:
+                        filePath = "Questions/GeographyQuestions.json";
+                        break;
+                    case 3:
+                        filePath = "Questions/ProgrammingQuestions.json";
+                        break;
+                    case 4:
+                        filePath = "Questions/MovieQuestions.json";
+                        break;
+                    default:
+                        break;
+                }
+                questions = QuizLoader.LoadQuestions(filePath);
+                if (questions == null)
                 {
                     MessageBox.Show("Unable to load questions. PLease check question file or Try Again!");
-                    return;
                 }
-
-                Shuffle(_questions);
-                foreach (var question in _questions)
+                else
                 {
-                    if (question.Answers == null)
+                    Shuffle(questions);
+                    foreach (var question in questions)
                     {
-                        MessageBox.Show("Unable to load Answers. PLease check Answers file or Try Again!");
-                        return;
+                        if (question.Answers == null)
+                        {
+                            MessageBox.Show("Unable to load Answers. PLease check Answers file or Try Again!");
+                        }
+                        Shuffle(question.Answers);
                     }
-                    Shuffle(question.Answers);
                 }
             }
             catch (Exception ex)
@@ -91,9 +112,9 @@ namespace QuizGameProject
             try
             {
 
-                QuestionNum.Text = $"{currentQuestionIndex + 1} / {_questions.Count}";
+                QuestionNum.Text = $"{currentQuestionIndex + 1} / {questions.Count}";
 
-                var currentQuestion = _questions[currentQuestionIndex];
+                var currentQuestion = questions[currentQuestionIndex];
                 QuestionText.Text = currentQuestion.Question;
 
                 AnswerButton1.Content = currentQuestion.Answers[0].Text;
@@ -155,7 +176,7 @@ namespace QuizGameProject
 
                 QuestionText.Text = ((bool)button.Tag ? "Correct" : "Incorrect");
 
-                ProgressGame((bool)button.Tag);
+                ProgressGame((bool)button.Tag, true);
 
             }
         }
@@ -167,7 +188,7 @@ namespace QuizGameProject
             AnswerButton4.IsEnabled = !AnswerButton4.IsEnabled;
         }
 
-        private async void ProgressGame(bool choice)
+        private async void ProgressGame(bool choice, bool gameTimerStillGoing)
         {
             if (choice)
             {
@@ -180,10 +201,19 @@ namespace QuizGameProject
 
             currentQuestionIndex++;
 
-            if (currentQuestionIndex < _questions.Count)
+            if (currentQuestionIndex < questions.Count && gameTimerStillGoing)
             {
                 DisplayCurrentQuestion();
                 EnableDisableButtons();
+            }
+            else if(currentQuestionIndex >= questions.Count || !gameTimerStillGoing)
+            {
+                questionNumText = $"{currentQuestionIndex} / {questions.Count}";
+                overallPercentageText = $"{(numCorrect * 100) / questions.Count}%";
+
+                Window3 window3 = new Window3(questionNumText, ScoreCounter.Text, overallPercentageText);
+                window3.Show();
+                this.Close();
             }
         }
 
@@ -213,7 +243,7 @@ namespace QuizGameProject
                 if (i == 0)
                 {
                     EnableDisableButtons();
-                    ProgressGame(false);
+                    ProgressGame(false, false);
                     return;
                 }
             }
@@ -239,7 +269,7 @@ namespace QuizGameProject
                 if(i == 0)
                 {
                     EnableDisableButtons();
-                    ProgressGame(false);
+                    ProgressGame(false, true);
                     return;
                 }
             }

@@ -30,7 +30,7 @@
 
         <!-- Content -->
         <DockPanel Name="QuestionBox" Grid.Row="2" Grid.Column="1" Background="AliceBlue">
-            <TextBlock Name="QuestionText" Text="Question" FontSize="20" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <TextBlock Name="QuestionText" Text="Question" FontSize="20" FontWeight="Bold" TextAlignment="Center" Height="101" TextWrapping="Wrap" Width="613"/>
         </DockPanel>
 
         <Grid Grid.Row="0" Grid.Column="1">
