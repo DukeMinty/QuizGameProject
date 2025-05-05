@@ -25,13 +25,19 @@ namespace QuizGameProject
         private int numCorrect = 0;
 
         private int _gameTimeSeconds;
+        private int _perQuestionTime;
+
+        private bool _isPerGameTimer;
+
         private CancellationTokenSource _gameTimerCts;
+        private CancellationTokenSource _questionTimerCts;
 
         //This window is called if a timer is set
         public Window1(bool timerStatus, int timerLength)
         {
             InitializeComponent();
-            StartGameTimer(timerStatus, timerLength);
+            _isPerGameTimer = timerStatus;
+            _ = StartGameTimer(timerStatus, timerLength);
             LoadQuestions();
             DisplayCurrentQuestion();
         }
@@ -94,6 +100,11 @@ namespace QuizGameProject
 
                 AnswerButton4.Content = currentQuestion.Answers[3].Text;
                 AnswerButton4.Tag = currentQuestion.Answers[3].IsCorrect;
+
+                if (!_isPerGameTimer)
+                {
+                    StartPerQuestionTimer(_perQuestionTime);
+                }
             }
             catch (Exception ex)
             {
@@ -130,6 +141,8 @@ namespace QuizGameProject
         {
             if (sender is Button button)
             {
+                _questionTimerCts?.Cancel();
+
                 // Disable all buttons
                 EnableDisableButtons();
 
@@ -177,20 +190,50 @@ namespace QuizGameProject
             //to be cancelled during the game without causing exceptions.
 
             _gameTimeSeconds = timerLength;
-
+            _perQuestionTime = timerLength;
             _gameTimerCts = new CancellationTokenSource();
             var token = _gameTimerCts.Token;
 
-            for (int i = _gameTimeSeconds; i >= 0; i--)
+            if (timerStatus)
+            {
+                _gameTimeSeconds = timerLength;
+                for (int i = _gameTimeSeconds; i >= 0; i--)
+                {
+                    Timer.Text = $"{i}";
+
+                    try
+                    {
+                        await Task.Delay(1000, token);
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
+        private async void StartPerQuestionTimer(int seconds)
+        {
+            _questionTimerCts?.Cancel();
+            _questionTimerCts = new CancellationTokenSource();
+            var token = _questionTimerCts.Token;
+
+            for (int i = seconds; i >= 0; i--)
             {
                 Timer.Text = $"{i}";
-
                 try
                 {
                     await Task.Delay(1000, token);
                 }
-                catch (TaskCanceledException)
+                catch(TaskCanceledException)
                 {
+                    return;
+                }
+                if(i == 0)
+                {
+                    EnableDisableButtons();
+                    ProgressGame(false);
                     return;
                 }
             }
