@@ -69,15 +69,19 @@ namespace QuizGameProject
                 {
                     case 1:
                         filePath = "Questions/MizzouQuestions.json";
+                        GameTitle.Text = "Mizzou Trivia";
                         break;
                     case 2:
                         filePath = "Questions/GeographyQuestions.json";
+                        GameTitle.Text = "Geography Trivia";
                         break;
                     case 3:
                         filePath = "Questions/ProgrammingQuestions.json";
+                        GameTitle.Text = "Programming Trivia";
                         break;
                     case 4:
                         filePath = "Questions/MovieQuestions.json";
+                        GameTitle.Text = "Movie Trivia";
                         break;
                     default:
                         break;
@@ -230,8 +234,7 @@ namespace QuizGameProject
 
             for (int i = timerLength; i >= 0; i--)
             {
-                Timer.Text = $"{i}";
-
+                ProgressTimer(i, timerLength);
                 try
                 {
                     await Task.Delay(1000, token);
@@ -257,7 +260,7 @@ namespace QuizGameProject
 
             for (int i = seconds; i >= 0; i--)
             {
-                Timer.Text = $"{i}";
+                ProgressTimer(i, seconds);
                 try
                 {
                     await Task.Delay(1000, token);
@@ -272,6 +275,24 @@ namespace QuizGameProject
                     ProgressGame(false, true);
                     return;
                 }
+            }
+        }
+
+        private void ProgressTimer(int timeLeft, int timerLength)
+        {
+            Timer.Text = $"Time: {timeLeft}";
+
+            if (timeLeft <= timerLength * 0.1)
+            {
+                Timer.Foreground = Brushes.Red;
+            }
+            else if (timeLeft <= timerLength * 0.3)
+            {
+                Timer.Foreground = Brushes.Orange;
+            }
+            else
+            {
+                Timer.Foreground = Brushes.Green;
             }
         }
     }
