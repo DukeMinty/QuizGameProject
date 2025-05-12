@@ -36,7 +36,7 @@
 
         <TextBlock Grid.Column="1" Grid.Row="1" Name="QuestionsAnsweredText" Text="Questions answered: " FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" Height="48" Width="473" TextAlignment="Center"/>
 
-        <TextBlock Grid.Column="1" Grid.Row="3" Name="PercentageCorrectText" Text="Percentage correct: " FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" Height="48" Width="473" TextAlignment="Center"/>
+        <TextBlock Grid.Column="1" Grid.Row="3" Name="PercentageCorrectText" Text="Num Correct: " FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" Height="48" Width="473" TextAlignment="Center"/>
 
         <TextBlock Grid.Column="1" Grid.Row="5" Name="OverallPercentageCorrectText" Text="Overall Percentage correct: " FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" Height="48" Width="473" TextAlignment="Center"/>
 

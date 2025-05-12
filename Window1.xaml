@@ -42,7 +42,7 @@
                 <ColumnDefinition Width="30*"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" Name="Timer" Text="Time: " FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Height="48" Width="184" TextAlignment="Center"/>
+            <TextBlock Grid.Column="0" Name="TimerDisplayBox" Text="" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Height="48" Width="184" TextAlignment="Center"/>
             <TextBlock Grid.Column="1" Name="GameTitle" Text="" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Height="48" Width="401" TextAlignment="Center"/>
             <TextBlock Grid.Column="2" Name="ScoreCounter" Text="0%" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Height="48" Width="184" TextAlignment="Center"/>
         </Grid>

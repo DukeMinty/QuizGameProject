@@ -9,8 +9,7 @@ namespace QuizGameProject
     class HighScore
     {
         public int highScore {get; set;}
-        private static string path = "HighScore/highscores.json";
-        public static HighScore LoadHighScore()
+        public static HighScore LoadHighScore(string path)
         {
             try
             {
@@ -29,11 +28,11 @@ namespace QuizGameProject
 
             }
         }
-        public static void SaveHighScore(int numCorrect)
+        public static void SaveHighScore(int numCorrect, string path)
         {
             try
             {
-                HighScore currentHighScore = LoadHighScore();
+                HighScore currentHighScore = LoadHighScore(path);
 
                 if (numCorrect > currentHighScore.highScore)
                 {

@@ -30,7 +30,8 @@ namespace QuizGameProject
         private string questionNumText;
         private string overallPercentageText;
 
-        private bool questionsLoaded;
+        string questionFilePath;
+        string highScoreFilePath;
 
         private CancellationTokenSource gameTimerCts;
         private CancellationTokenSource questionTimerCts;
@@ -64,29 +65,32 @@ namespace QuizGameProject
         {
             try
             {
-                string filePath = string.Empty;
                 switch (quizChoice)
                 {
                     case 1:
-                        filePath = "Questions/MizzouQuestions.json";
+                        questionFilePath = "Questions/MizzouQuestions.json";
+                        highScoreFilePath = "HighScore/MizzouHighscore.json";
                         GameTitle.Text = "Mizzou Trivia";
                         break;
                     case 2:
-                        filePath = "Questions/GeographyQuestions.json";
+                        questionFilePath = "Questions/GeographyQuestions.json";
+                        highScoreFilePath = "HighScore/GeographyHighscore.json";
                         GameTitle.Text = "Geography Trivia";
                         break;
                     case 3:
-                        filePath = "Questions/ProgrammingQuestions.json";
+                        questionFilePath = "Questions/ProgrammingQuestions.json";
+                        highScoreFilePath = "HighScore/ProgrammingHighscore.json";
                         GameTitle.Text = "Programming Trivia";
                         break;
                     case 4:
-                        filePath = "Questions/MovieQuestions.json";
+                        questionFilePath = "Questions/MovieQuestions.json";
+                        highScoreFilePath = "HighScore/MovieHighscore.json";
                         GameTitle.Text = "Movie Trivia";
                         break;
                     default:
                         break;
                 }
-                questions = QuizLoader.LoadQuestions(filePath);
+                questions = QuizLoader.LoadQuestions(questionFilePath);
                 if (questions == null)
                 {
                     MessageBox.Show("Unable to load questions. PLease check question file or Try Again!");
@@ -212,12 +216,7 @@ namespace QuizGameProject
             }
             else if(currentQuestionIndex >= questions.Count || !gameTimerStillGoing)
             {
-                questionNumText = $"{currentQuestionIndex} / {questions.Count}";
-                overallPercentageText = $"{(numCorrect * 100) / questions.Count}%";
-
-                Window3 window3 = new Window3(questionNumText, ScoreCounter.Text, overallPercentageText, numCorrect);
-                window3.Show();
-                this.Close();
+                EndGame();
             }
         }
 
@@ -280,20 +279,33 @@ namespace QuizGameProject
 
         private void ProgressTimer(int timeLeft, int timerLength)
         {
-            Timer.Text = $"Time: {timeLeft}";
+            TimerDisplayBox.Text = $"Time: {timeLeft}";
 
             if (timeLeft <= timerLength * 0.1)
             {
-                Timer.Foreground = Brushes.Red;
+                TimerDisplayBox.Foreground = Brushes.Red;
             }
             else if (timeLeft <= timerLength * 0.3)
             {
-                Timer.Foreground = Brushes.Orange;
+                TimerDisplayBox.Foreground = Brushes.Orange;
             }
             else
             {
-                Timer.Foreground = Brushes.Green;
+                TimerDisplayBox.Foreground = Brushes.Green;
             }
+        }
+
+        private void EndGame()
+        {
+            questionNumText = $"{currentQuestionIndex} / {questions.Count}";
+            overallPercentageText = $"{(numCorrect * 100) / questions.Count}%";
+
+            HighScore.SaveHighScore(numCorrect, highScoreFilePath);
+            HighScore highScore = HighScore.LoadHighScore(highScoreFilePath);
+
+            Window3 window3 = new Window3(questionNumText, overallPercentageText, numCorrect, highScore.highScore);
+            window3.Show();
+            this.Close();
         }
     }
 }

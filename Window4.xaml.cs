@@ -38,6 +38,32 @@ namespace QuizGameProject
 
             this.timerStatus = timerStatus;
             this.timerLength = timerLength;
+            
+            HighScore mizzouHighScore = HighScore.LoadHighScore("HighScore/MizzouHighscore.json");
+            HighScore geoHighScore = HighScore.LoadHighScore("HighScore/GeographyHighscore.json");
+            HighScore programmingHighScore = HighScore.LoadHighScore("HighScore/ProgrammingHighscore.json");
+            HighScore movieHighScore = HighScore.LoadHighScore("HighScore/MovieHighscore.json");
+
+            if(mizzouHighScore.highScore == 20)
+            {
+                MizzouButton.Content = "⭐ Mizzou ⭐";
+                MizzouButton.Background = new SolidColorBrush(Colors.LightGoldenrodYellow);
+            }
+            if (geoHighScore.highScore == 20)
+            {
+                GeoButton.Content = "⭐ US Geography ⭐";
+                GeoButton.Background = new SolidColorBrush(Colors.LightGoldenrodYellow);
+            }
+            if (programmingHighScore.highScore == 20)
+            {
+                ProgrammingButton.Content = "⭐ C# Programming ⭐";
+                ProgrammingButton.Background = new SolidColorBrush(Colors.LightGoldenrodYellow);
+            }
+            if (movieHighScore.highScore == 20)
+            {
+                MovieButton.Content = "⭐ Movies ⭐";
+                MovieButton.Background = new SolidColorBrush(Colors.LightGoldenrodYellow);
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

@@ -42,12 +42,19 @@ namespace QuizGameProject
                         MessageBox.Show("Please enter a valid number for the timer.");
                         return;
                     }
+                    if (timerSeconds <= 4)
+                    {
+                        MessageBox.Show("Please ensure your timer is set to at least 5 seconds.");
+                        return;
+                    }
+                    if(timerSeconds > 999)
+                    {
+                        MessageBox.Show("Timer value is too large.");
+                        return;
+                    }
                     Window4 window4 = new Window4((bool)TimerStatusButton.Tag, timerSeconds);
                     window4.Show();
                     this.Close();
-                    //Window1 window1 = new Window1((bool)TimerStatusButton.Tag, timerSeconds);
-                    //window1.Show();
-                    //this.Close();
                 }
                 else
                 {
