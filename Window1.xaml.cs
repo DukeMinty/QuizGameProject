@@ -20,56 +20,88 @@ namespace QuizGameProject
     /// </summary>
     public partial class Window1 : Window
     {
-        private List<QuizQuestions> _questions;
-        private int _currentQuestionIndex = 0;
+        private List<QuizQuestions> questions;
+        private int currentQuestionIndex = 0;
         private int numCorrect = 0;
 
-        private int _gameTimeSeconds;
-        private int _perQuestionTime;
+        private bool isPerGameTimer = true;
+        private int perQuestionTime = 0;
 
-        private bool _isPerGameTimer;
+        private string questionNumText;
+        private string overallPercentageText;
 
-        private CancellationTokenSource _gameTimerCts;
-        private CancellationTokenSource _questionTimerCts;
+        private bool questionsLoaded;
+
+        private CancellationTokenSource gameTimerCts;
+        private CancellationTokenSource questionTimerCts;
 
         //This window is called if a timer is set
-        public Window1(bool timerStatus, int timerLength)
+        public Window1(bool timerStatus, int timerLength, int quizChoice)
         {
             InitializeComponent();
-            _isPerGameTimer = timerStatus;
-            _ = StartGameTimer(timerStatus, timerLength);
-            LoadQuestions();
+            if (timerStatus)
+            { 
+                StartGameTimer(timerLength);
+            }
+            else
+            {
+                isPerGameTimer = false;
+                perQuestionTime = timerLength;
+            }
+            LoadQuestions(quizChoice);
             DisplayCurrentQuestion();
         }
 
         //This window is called if no timer is set
-        public Window1()
+        public Window1(int quizChoice)
         {
             InitializeComponent();
-            LoadQuestions();
+            LoadQuestions(quizChoice);
             DisplayCurrentQuestion();
         }
 
-        private void LoadQuestions()
+        private void LoadQuestions(int quizChoice)
         {
             try
             {
-                _questions = QuizLoader.LoadQuestions("Questions/testQuestions.json");
-                if (_questions == null)
+                string filePath = string.Empty;
+                switch (quizChoice)
+                {
+                    case 1:
+                        filePath = "Questions/MizzouQuestions.json";
+                        GameTitle.Text = "Mizzou Trivia";
+                        break;
+                    case 2:
+                        filePath = "Questions/GeographyQuestions.json";
+                        GameTitle.Text = "Geography Trivia";
+                        break;
+                    case 3:
+                        filePath = "Questions/ProgrammingQuestions.json";
+                        GameTitle.Text = "Programming Trivia";
+                        break;
+                    case 4:
+                        filePath = "Questions/MovieQuestions.json";
+                        GameTitle.Text = "Movie Trivia";
+                        break;
+                    default:
+                        break;
+                }
+                questions = QuizLoader.LoadQuestions(filePath);
+                if (questions == null)
                 {
                     MessageBox.Show("Unable to load questions. PLease check question file or Try Again!");
-                    return;
                 }
-
-                Shuffle(_questions);
-                foreach (var question in _questions)
+                else
                 {
-                    if (question.Answers == null)
+                    Shuffle(questions);
+                    foreach (var question in questions)
                     {
-                        MessageBox.Show("Unable to load Answers. PLease check Answers file or Try Again!");
-                        return;
+                        if (question.Answers == null)
+                        {
+                            MessageBox.Show("Unable to load Answers. PLease check Answers file or Try Again!");
+                        }
+                        Shuffle(question.Answers);
                     }
-                    Shuffle(question.Answers);
                 }
             }
             catch (Exception ex)
@@ -84,9 +116,9 @@ namespace QuizGameProject
             try
             {
 
-                QuestionNum.Text = $"{_currentQuestionIndex + 1} / {_questions.Count}";
+                QuestionNum.Text = $"{currentQuestionIndex + 1} / {questions.Count}";
 
-                var currentQuestion = _questions[_currentQuestionIndex];
+                var currentQuestion = questions[currentQuestionIndex];
                 QuestionText.Text = currentQuestion.Question;
 
                 AnswerButton1.Content = currentQuestion.Answers[0].Text;
@@ -101,9 +133,9 @@ namespace QuizGameProject
                 AnswerButton4.Content = currentQuestion.Answers[3].Text;
                 AnswerButton4.Tag = currentQuestion.Answers[3].IsCorrect;
 
-                if (!_isPerGameTimer)
+                if (!isPerGameTimer)
                 {
-                    StartPerQuestionTimer(_perQuestionTime);
+                    StartPerQuestionTimer(perQuestionTime);
                 }
             }
             catch (Exception ex)
@@ -141,14 +173,14 @@ namespace QuizGameProject
         {
             if (sender is Button button)
             {
-                _questionTimerCts?.Cancel();
+                questionTimerCts?.Cancel();
 
                 // Disable all buttons
                 EnableDisableButtons();
 
                 QuestionText.Text = ((bool)button.Tag ? "Correct" : "Incorrect");
 
-                ProgressGame((bool)button.Tag);
+                ProgressGame((bool)button.Tag, true);
 
             }
         }
@@ -160,28 +192,36 @@ namespace QuizGameProject
             AnswerButton4.IsEnabled = !AnswerButton4.IsEnabled;
         }
 
-        private async void ProgressGame(bool choice)
+        private async void ProgressGame(bool choice, bool gameTimerStillGoing)
         {
             if (choice)
             {
                 numCorrect++;
             }
 
-            ScoreCounter.Text = $"{(numCorrect * 100) / (_currentQuestionIndex + 1)}%";
+            ScoreCounter.Text = $"{(numCorrect * 100) / (currentQuestionIndex + 1)}%";
 
             await Task.Delay(2000);
 
-            _currentQuestionIndex++;
+            currentQuestionIndex++;
 
-            if (_currentQuestionIndex < _questions.Count)
+            if (currentQuestionIndex < questions.Count && gameTimerStillGoing)
             {
                 DisplayCurrentQuestion();
                 EnableDisableButtons();
-                //EndGame();
+            }
+            else if(currentQuestionIndex >= questions.Count || !gameTimerStillGoing)
+            {
+                questionNumText = $"{currentQuestionIndex} / {questions.Count}";
+                overallPercentageText = $"{(numCorrect * 100) / questions.Count}%";
+
+                Window3 window3 = new Window3(questionNumText, ScoreCounter.Text, overallPercentageText);
+                window3.Show();
+                this.Close();
             }
         }
 
-        private async Task StartGameTimer(bool timerStatus, int timerLength)
+        private async Task StartGameTimer(int timerLength)
         {
 
             //Aaron -
@@ -189,39 +229,38 @@ namespace QuizGameProject
             //GPT gave me the idea of a CancellationTokenSource, allowing for the timer
             //to be cancelled during the game without causing exceptions.
 
-            _gameTimeSeconds = timerLength;
-            _perQuestionTime = timerLength;
-            _gameTimerCts = new CancellationTokenSource();
-            var token = _gameTimerCts.Token;
+            gameTimerCts = new CancellationTokenSource();
+            var token = gameTimerCts.Token;
 
-            if (timerStatus)
+            for (int i = timerLength; i >= 0; i--)
             {
-                _gameTimeSeconds = timerLength;
-                for (int i = _gameTimeSeconds; i >= 0; i--)
+                ProgressTimer(i, timerLength);
+                try
                 {
-                    Timer.Text = $"{i}";
-
-                    try
-                    {
-                        await Task.Delay(1000, token);
-                    }
-                    catch (TaskCanceledException)
-                    {
-                        return;
-                    }
+                    await Task.Delay(1000, token);
+                }
+                catch (TaskCanceledException)
+                {
+                    return;
+                }
+                if (i == 0)
+                {
+                    EnableDisableButtons();
+                    ProgressGame(false, false);
+                    return;
                 }
             }
         }
 
         private async void StartPerQuestionTimer(int seconds)
         {
-            _questionTimerCts?.Cancel();
-            _questionTimerCts = new CancellationTokenSource();
-            var token = _questionTimerCts.Token;
+            questionTimerCts?.Cancel();
+            questionTimerCts = new CancellationTokenSource();
+            var token = questionTimerCts.Token;
 
             for (int i = seconds; i >= 0; i--)
             {
-                Timer.Text = $"{i}";
+                ProgressTimer(i, seconds);
                 try
                 {
                     await Task.Delay(1000, token);
@@ -233,21 +272,28 @@ namespace QuizGameProject
                 if(i == 0)
                 {
                     EnableDisableButtons();
-                    ProgressGame(false);
+                    ProgressGame(false, true);
                     return;
                 }
             }
         }
 
-        //private void EndGame()
-        //{
-        //    _gameTimerCts?.Cancel();
-        //    AnswerButton1.IsEnabled = false;
-        //    AnswerButton2.IsEnabled = false;
-        //    AnswerButton3.IsEnabled = false;
-        //    AnswerButton4.IsEnabled = false;
+        private void ProgressTimer(int timeLeft, int timerLength)
+        {
+            Timer.Text = $"Time: {timeLeft}";
 
-        //    QuestionText.Text = $"Final Score: {numCorrect} / {_questions.Count} ({percentageCorrect}%)";
-        //}
+            if (timeLeft <= timerLength * 0.1)
+            {
+                Timer.Foreground = Brushes.Red;
+            }
+            else if (timeLeft <= timerLength * 0.3)
+            {
+                Timer.Foreground = Brushes.Orange;
+            }
+            else
+            {
+                Timer.Foreground = Brushes.Green;
+            }
+        }
     }
 }

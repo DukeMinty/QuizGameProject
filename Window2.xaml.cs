@@ -42,15 +42,21 @@ namespace QuizGameProject
                         MessageBox.Show("Please enter a valid number for the timer.");
                         return;
                     }
-                    Window1 window1 = new Window1((bool)TimerStatusButton.Tag, timerSeconds);
-                    window1.Show();
+                    Window4 window4 = new Window4((bool)TimerStatusButton.Tag, timerSeconds);
+                    window4.Show();
                     this.Close();
+                    //Window1 window1 = new Window1((bool)TimerStatusButton.Tag, timerSeconds);
+                    //window1.Show();
+                    //this.Close();
                 }
                 else
                 {
-                    Window1 window1 = new Window1();
-                    window1.Show();
+                    Window4 window4 = new Window4();
+                    window4.Show();
                     this.Close();
+                    //Window1 window1 = new Window1();
+                    //window1.Show();
+                    //this.Close();
                 }
             }
             catch (Exception ex)
