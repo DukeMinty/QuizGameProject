@@ -19,13 +19,15 @@ namespace QuizGameProject
     /// </summary>
     public partial class Window3 : Window
     {
-        public Window3(string questionsAnswered, string percentCorrect, string overallCorrect)
+        public Window3(string questionsAnswered, string percentCorrect, string overallCorrect, int numCorrect)
         {
             InitializeComponent();
-
             QuestionsAnsweredText.Text = $"Questions answered: {questionsAnswered}";
             PercentageCorrectText.Text = $"Percent correct: {percentCorrect}";
             OverallPercentageCorrectText.Text = $"Overall correct: {overallCorrect}";
+            HighScore highScore = HighScore.LoadHighScore();
+            HighScore.SaveHighScore(numCorrect);
+            HighScoreText.Text = $"High Score: {highScore.highScore}";
         }
 
         private void Main_Menu_Button_Click(object sender, RoutedEventArgs e)

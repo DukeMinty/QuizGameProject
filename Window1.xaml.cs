@@ -22,7 +22,7 @@ namespace QuizGameProject
     {
         private List<QuizQuestions> questions;
         private int currentQuestionIndex = 0;
-        private int numCorrect = 0;
+        public int numCorrect {  get; set; }
 
         private bool isPerGameTimer = true;
         private int perQuestionTime = 0;
@@ -215,7 +215,7 @@ namespace QuizGameProject
                 questionNumText = $"{currentQuestionIndex} / {questions.Count}";
                 overallPercentageText = $"{(numCorrect * 100) / questions.Count}%";
 
-                Window3 window3 = new Window3(questionNumText, ScoreCounter.Text, overallPercentageText);
+                Window3 window3 = new Window3(questionNumText, ScoreCounter.Text, overallPercentageText, numCorrect);
                 window3.Show();
                 this.Close();
             }
